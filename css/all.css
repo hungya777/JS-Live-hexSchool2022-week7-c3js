@@ -78,6 +78,9 @@ a {
 
 /* 滑鼠移到按鈕元件會出現【手指圖示】 */
 /* 文字-大小 */
+.fs-s {
+  font-size: 14px;
+}
 .fs-base {
   font-size: 16px;
 }
@@ -105,6 +108,9 @@ a {
 /* 文字-顏色 */
 .text-primary {
   color: #00807E;
+}
+.text-danger {
+  color: #FF0000;
 }
 .text-gray-dark {
   color: #818A91;

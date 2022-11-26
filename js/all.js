@@ -1,3 +1,6 @@
+// import file
+import validateForm from "./validate.js";
+
 //取得目前 id的最大值(暫存id值)
 let tempId = 0;
 
@@ -14,6 +17,9 @@ const ticketNum = document.querySelector("#ticketNum");
 const ticketRate = document.querySelector("#ticketRate");
 const ticketDescription = document.querySelector("#ticketDescription");
 const btnAddTicket = document.querySelector("#btnAddTicket");
+// const addFormInputs = document.querySelectorAll("input[type=text],input[type=number],select,textarea");
+const addFormInputs = document.querySelectorAll('[data-inputName]');
+console.log(addFormInputs);
 
 //下拉選單-地區搜尋
 const locationSearch = document.querySelector("#locationSearch");
@@ -145,21 +151,16 @@ function renderC3(data){
   });
 }
 
+// 驗證表單欄位
+validateForm(addForm, addFormInputs);
+
 //監聽 新增套票按鈕 綁定 click 監聽事件
 btnAddTicket.addEventListener('click',(e) =>{
-  let arrInputs = [  //存放表單DOM變數
-    ticketName,
-    ticketImgUrl,
-    ticketLocation,
-    ticketPrice,
-    ticketNum,
-    ticketRate,
-    ticketDescription
-  ]
-  //檢查欄位
-  let chkMsg = chkFormValue(arrInputs);
+  const arrVerifyMsgs = document.querySelectorAll('[data-MsgName]'); //驗證訊息元素
+  let chkMsg = chkFormValue(addFormInputs, arrVerifyMsgs);
+  // console.log(chkMsg);
   if(chkMsg != "") { //若有驗證不過的訊息，alert提醒
-    alert(chkMsg);
+    alertFormVerifyMsg();
   } else {
     let obj = {}; //宣告一個物件，用來存放新增的套票內容
     obj.id = ++tempId;
@@ -193,21 +194,18 @@ locationSearch.addEventListener('change', (e)=>{
 })
 
 //檢查、驗證新增套票的input欄位是否符合要求
-function chkFormValue(arrInputs){
+function chkFormValue(addFormInputs, arrVerifyMsgs){
   let str = "";
-  arrInputs.forEach((item)=>{
+  //檢查欄位是否空白
+  addFormInputs.forEach((item)=>{
     if(item.value == "") {
       str += `欄位【${item.name}】不可空白，請填寫。\n`;
-    } else {
-      if(item.name == "套票星級" && !(parseInt(item.value)>0 && parseInt(item.value)<=10)) {
-        str += `【套票星級】請輸入數值:1~10\n`;
-      } else if(item.name == "套票組數" && parseInt(item.value) <=0 ) {
-        str += `【套票組數】請輸入大於0數值\n`;
-      } else if(item.name == "套票金額" && parseInt(item.value) <=0) {
-        str += `【套票金額】請輸入大於0數值\n`;
-      } else if(item.name == "套票描述" && parseInt(item.value.length) > 80) {
-        str += `【套票描述】的字數不可以超過80個字，請重新確認。\n`;
-      }
+    }
+  })
+  //檢查是否有驗證未過的訊息
+  arrVerifyMsgs.forEach((item)=>{
+    if(item.textContent != "") {
+      str += `${item.textContent}\n`;
     }
   })
   return str;
@@ -219,4 +217,12 @@ function separator(numb) {
   str[0] = str[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   return str.join(".");
 }
-
+// 表單驗證訊息Alert (SweetAlert)
+function alertFormVerifyMsg(){
+  swal({
+    title: "請確認表單欄位【不可空白】、且【完整填寫】再點擊【新增套票】。",
+    icon: "warning",
+    buttons: true,
+    dangerMode: true
+  });
+}
